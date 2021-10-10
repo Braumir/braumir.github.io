@@ -1,0 +1,10 @@
+- ADDING USER TO SUDO GROUP
+
+su -
+apt-get install sudo
+sudo usermod -a -G sudo username
+su username
+sudo apt-get update
+sudo apt-get upgrade
+sudo visudo
+username ALL=(ALL:ALL) NOPASSWD:ALL

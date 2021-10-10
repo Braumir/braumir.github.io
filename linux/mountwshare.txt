@@ -1,0 +1,12 @@
+- MOUNTING A WINDOWS SHARE
+
+sudo apt-get install cifs-utils
+sudo mkdir /media/Foldername
+sudo chown username /media/Foldername {{not working atm}}
+sudo nano /etc/fstab
+add a line :
+//servername/Sharename /media/Foldername  cifs    username=username,password=Password,iocharset=utf8,file_mode=0775,dir_mode=0775 0       0
+  (the owner will be root:root, put the user needed in root group [sudo adduser username root])
+OU PLUS SIMPLE :
+echo '//servername/Sharename /media/Foldername  cifs    username=username,password=Password,iocharset=utf8,file_mode=0775,dir_mode=0775 0       0' | sudo tee -a /etc/fstab
+

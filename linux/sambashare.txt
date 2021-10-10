@@ -1,0 +1,25 @@
+
+
+- INSTALLING SAMBA AND SHARING A DIRECTORY
+
+sudo apt-get install samba samba-common-bin -y
+  (NO to DHCP stuff if static IP address)
+sudo nano /etc/samba/smb.conf
+
+[SHARENAME]
+path = /mnt/md0/foldername
+writeable = yes
+public = no
+create mask = 0777
+directory mask = 0777
+
+sudo smbpasswd -a username {{enter password when prompt}}
+sudo systemctl restart smbd
+
+
+- MOUNTING A NETWORK SHARE
+
+sudo mount //serverIP/sharename /mounting/point/created -o user=USERNAME,pass=PASSWORD,vers=1.0
+{{vers=1.0 for smb V1 shares}}
+
+

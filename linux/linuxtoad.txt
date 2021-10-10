@@ -1,0 +1,95 @@
+- ADDING A DEBIAN COMPUTER TO WINDOWS AD
+
+Set the DNS to point to the Winserver's DNS
+
+sudo nano /etc/hosts
+ IP.ADDRESS??? Servername Servername.domain.local
+Try to ping the server by name.
+
+
+sudo apt-get install sssd heimdal-clients krtutil
+write the domainname when prompted
+
+sudo mv /etckrb5.conf /etc/krb5.conf.old
+sudo nano /etc/krb5.conf
+
+[libdefaults]
+default_realm = DOMAINNAME.LOCAL
+rdns = no
+dns_lookup_kdc = true
+dns_lookup_realm = true
+
+[realms]
+DOMAINNAME.LOCAL = {
+kdc = servername.domainname.local
+admin_server = servername.domainname.local
+}
+
+save and exit
+
+{{initialazing kerberos with winserver admin account}}
+kinit administrator 
+
+sudo msktutil -N -c -b 'CN=COMPUTERS' -s COMPUTERNAME/computername.domainname.local -k my-keytab.keytab --computer-name COMPUTERNAME --upn COMPUTERNAME$ --server servername.domainname.local --user-creds-only
+
+sudo msktutil -N -c -b 'CN=COMPUTERS' -s COMPUTERNAME/computername -k my-keytab.keytab --computer-name COMPUTERNAME --upn COMPUTERNAME$ --server servername.domainname.local --user-creds-only
+
+
+kdestroy {{to delete the credential cache}}
+
+sudo mv my-keytab.keytab /etc/sssd/
+
+sudo nano /etc/sssd/sssd.conf
+
+[sssd]
+services = nss, pam
+config_file_version = 2
+domains = domainname.local
+
+[nss]
+entry_negative_timeout = 0
+#debug_level = 5
+
+[pam]
+#debug_level = 5
+
+[domain/domainname.local]
+#debug_level = 5
+enumerate = false
+id_provider = ad
+auth_provider = ad
+chpass_provider = ad
+access_provider = ad
+dyndns_update = false
+ad_hostname = computername.domainname.local
+ad_server = servername.domainname.local
+ad_domain = domainname.local
+ldap_schema = ad
+ldap_id_mapping = true
+fallback_homedir = /home/%u
+default_shell = /bin/bash
+ldap_sasl_mesh = gssapi
+ldap_sasl_authid = COMPUTERNAME$
+krb5_keytab = /etc/sssd/my-keytab.keytab
+ldap_krb5_init_creds = true
+
+save and exit
+
+sudo chmod 0600 /etc/sssd/sssd.conf {{only root has access, generate an error if not done}}
+
+
+sudo nano /etc/pam.d/common-session
+
+just after this line :
+session required        pam_unix.so
+add this one :
+session required        pam_mkhomedir.so skel=/etc/skel umask=0077
+
+save and exit
+
+
+sudo systemctl restart sssd
+
+
+sudo adduser administrator sudo {{adding Winserver's Admin account to Linux's sudo group}}
+
