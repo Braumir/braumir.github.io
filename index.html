@@ -1,1 +1,80 @@
-Nothing to see here.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retardocracy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent-cyan: #0099ff;
+      --accent-magenta: #ff007f;
+      --text-primary: #3a3a45;
+      --bg: #000;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .message {
+      position: absolute;
+      top: 4vh;
+      width: 100%;
+      font-size: clamp(1rem, 2.5vw, 1.6rem);
+      text-align: center;
+    }
+    .balance { display: flex; align-items: center; gap: clamp(0.8rem, 3vw, 3rem); }
+    .num { 
+      font-size: clamp(16rem, 45vmin, 38rem); 
+      line-height: 1; 
+      font-weight: bold;
+      will-change: transform;
+    }
+    .six { color: var(--accent-cyan); animation: balance 3s ease-in-out infinite alternate; }
+    .seven { color: var(--accent-magenta); animation: balance 3s ease-in-out infinite alternate-reverse; }
+    .or { font-size: clamp(1rem, 2.5vw, 1.6rem); vertical-align: middle; }
+    @keyframes balance { 0% { transform: translateY(-8vmin); } 100% { transform: translateY(8vmin); } }
+    .bottom-unit {
+      position: absolute;
+      bottom: 4vh;
+      font-size: clamp(1rem, 2.5vw, 1.6rem);
+    }
+    .unit-text { display: inline-block; transition: opacity 0.2s ease; }
+    @media (prefers-reduced-motion: reduce) {
+      .num { animation: none; }
+      .unit-text { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="message">The site is under construction, Come back in</div>
+  <div class="balance">
+    <span class="num six">6</span>
+    <span class="or">or</span>
+    <span class="num seven">7</span>
+  </div>
+  <div class="bottom-unit"><span class="unit-text">Days</span></div>
+
+  <script>
+    const units = ["Days", "Weeks", "Months", "Years"];
+    let idx = 0;
+    const el = document.querySelector('.unit-text');
+    setInterval(() => {
+      el.style.opacity = 0;
+      setTimeout(() => {
+        idx = (idx + 1) % units.length;
+        el.textContent = units[idx];
+        el.style.opacity = 1;
+      }, 200);
+    }, 1500);
+  </script>
+</body>
+</html>
